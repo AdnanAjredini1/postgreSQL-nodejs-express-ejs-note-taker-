@@ -16,7 +16,10 @@
       <div class="d-flex flex-column">
         <h2><%= note.title %></h2>
         <p><%= note.content.substring(0, 70) %></p>
-        <a href='/notes/<%=note._id%>'>Read more</a>
+      
+            <a href='/notes/<%=note._id%>'>Read more</a>
+          
+      
       </div>
     </li>
     <% } %>

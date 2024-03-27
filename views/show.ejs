@@ -1,15 +1,13 @@
 <div >
-    <div ><%=note.title%></div>
-       
-        <div >
-        <p><%note.content%></p>
-        </div>
-       
-        <a href='/edit/<%=note._id%>/edit' >Edit</a>
-
-       <form id ='delete' action='/blogs/<%=blog._id%>?_method=DELETE' method='POST'>
-            <button class='ui red basic button' >Delete</button>
-       </form>
-        
+    <div class="note">
+        <h2><%= note.title %></h2>
+        <p><%= note.content %></p>
+        <!-- Add links/buttons for editing/deleting -->
+        <a href="/edit/<%= note._id %>" class="btn btn-primary">Edit</a>
+        <form method="POST" action="/delete/<%= note._id %>" style="display: inline;">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
      
 </div>
