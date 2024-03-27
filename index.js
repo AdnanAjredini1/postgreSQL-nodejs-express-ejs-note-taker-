@@ -32,6 +32,24 @@ app.get("/", (req, res) => {
     
   });
 
+  app.post("/delete/:id",(req,res) => {
+    const id = req.params.id.toString()
+    // Find the index of the note with the specified ID
+    console.log(req.params.id.toString());
+    const noteIndex=notes.findIndex((note) => note.id===id);
+
+    if (noteIndex < -1){
+        return res.status(404).send('Note not found');
+    }
+
+    // Remove the note from the array
+    notes.splice(noteIndex,1);
+    
+    res.redirect("/");
+
+
+});
+
 
 
   app.listen(port, () => {
