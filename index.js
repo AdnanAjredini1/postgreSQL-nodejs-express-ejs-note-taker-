@@ -19,6 +19,8 @@ app.get("/", (req, res) => {
     console.log(notes);
   });
 
+
+
   app.get("/new", (req, res) => {
     res.render("new");
   });
@@ -26,17 +28,25 @@ app.get("/", (req, res) => {
   app.post("/new", (req, res) => {
     const { title, content } = req.body;
   
-    let id = notes.length + 1;
-    notes.push({ id, title, content });
+    let _id = notes.length + 1;
+    notes.push({ _id, title, content });
     res.redirect("/");
     
   });
 
-  app.post("/delete/:id",(req,res) => {
-    const id = req.params.id.toString()
+
+  app.get("notes/:_id",(req,res) => {
+    
+  })
+   
+
+
+
+  app.post("/delete/:_id",(req,res) => {
+    const id = req.params._id.toString()
     // Find the index of the note with the specified ID
-    console.log(req.params.id.toString());
-    const noteIndex=notes.findIndex((note) => note.id===id);
+    console.log(req.params._id.toString());
+    const noteIndex=notes.findIndex((note) => note._id===id);
 
     if (noteIndex < -1){
         return res.status(404).send('Note not found');
