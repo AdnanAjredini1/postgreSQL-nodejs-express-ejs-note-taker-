@@ -1,0 +1,17 @@
+<%- include("partials/header.ejs") %>
+<h1>Add New Note</h1>
+    
+<!-- Form for adding a new note -->
+<form action="/new" method="POST">
+    <label for="title">Title:</label><br>
+    <input type="text" id="title" name="title" required><br>
+    <label for="content">Content:</label><br>
+    <textarea id="content" name="content" rows="4" required></textarea><br>
+    <button type="submit">Add Note</button>
+</form>
+
+<!-- Link back to all notes -->
+<a href="/">Back to All Notes</a>
+
+
+<%- include("partials/footer.ejs") %>
