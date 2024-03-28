@@ -16,8 +16,6 @@ app.get("/", (req, res) => {
   res.render("index", { notes: notes });
 });
 
-// New note
-
 app.get("/new", (req, res) => {
   res.render("new");
 });
@@ -29,50 +27,44 @@ app.post("/new", (req, res) => {
   res.redirect("/");
 });
 
-// View note
-
-app.get('/notes/:_id', (req, res) => {
+app.get("/notes/:_id", (req, res) => {
   const _id = req.params._id;
-  const note = notes.find(note => note._id === parseInt(_id));
+  const note = notes.find((note) => note._id === parseInt(_id));
   if (!note) {
-    res.status(404).send('Note not found');
+    res.status(404).send("Note not found");
     return;
   }
-  res.render('show', { note: note });
+  res.render("show", { note: note });
 });
 
-// Edit note
-
 app.get("/edit/:_id", (req, res) => {
-    const _id = parseInt(req.params._id);
-    const note = notes.find(note => note._id === _id);
-    if (!note) {
-      res.status(404).send('Note not found');
-      return;
-    }
-    res.render("edit", { note: note });
-  });
-  
-  app.post("/edit/:_id", (req, res) => {
-    const _id = parseInt(req.params._id);
-    const { title, content } = req.body;
-    const noteIndex = notes.findIndex(note => note._id === _id);
-    if (noteIndex === -1) {
-      res.status(404).send('Note not found');
-      return;
-    }
-    notes[noteIndex].title = title;
-    notes[noteIndex].content = content;
-    res.redirect("/");
-  });
+  const _id = parseInt(req.params._id);
+  const note = notes.find((note) => note._id === _id);
+  if (!note) {
+    res.status(404).send("Note not found");
+    return;
+  }
+  res.render("edit", { note: note });
+});
 
-// Delete note
-
-app.post("/delete/:_id",(req,res) => {
-  const id = req.params._id.toString();
-  const noteIndex = notes.findIndex(note => note._id === parseInt(id));
+app.post("/edit/:_id", (req, res) => {
+  const _id = parseInt(req.params._id);
+  const { title, content } = req.body;
+  const noteIndex = notes.findIndex((note) => note._id === _id);
   if (noteIndex === -1) {
-    return res.status(404).send('Note not found');
+    res.status(404).send("Note not found");
+    return;
+  }
+  notes[noteIndex].title = title;
+  notes[noteIndex].content = content;
+  res.redirect("/");
+});
+
+app.post("/delete/:_id", (req, res) => {
+  const id = req.params._id.toString();
+  const noteIndex = notes.findIndex((note) => note._id === parseInt(id));
+  if (noteIndex === -1) {
+    return res.status(404).send("Note not found");
   }
   notes.splice(noteIndex, 1);
   res.redirect("/");
