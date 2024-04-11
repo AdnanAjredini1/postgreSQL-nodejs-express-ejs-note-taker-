@@ -94,7 +94,7 @@ app.post("/delete/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    await db.query("DELETE FROM notes WHERE id = $ ;", [id]);
+    await db.query("DELETE FROM notes WHERE id = $1 ", [id]);
     res.redirect("/");
   } catch (error) {
     console.log(error);
