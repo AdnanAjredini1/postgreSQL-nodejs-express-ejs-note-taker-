@@ -10,14 +10,14 @@
 
           <div class="d-flex justify-content-between">
             <a
-              href="/edit/<%= note._id %>"
+              href="/edit/<%= note.id %>"
               class="btn"
               style="background: #4fd0c7; color: white"
               >Edit</a
             >
             <form
               method="POST"
-              action="/delete/<%= note._id %>"
+              action="/delete/<%= note.id %>"
               style="display: inline"
             >
               <input type="hidden" name="_method" value="DELETE" />

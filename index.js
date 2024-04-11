@@ -2,72 +2,103 @@ import express from "express";
 import bodyParser from "body-parser";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import pg from "pg";
 
 const app = express();
 const port = 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const notes = [];
+
+let notes = [];
+
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "Notes",
+  password: "***********",
+  port: 5432,
+});
+db.connect();
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.render("index", { notes: notes });
+app.get("/", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM notes ORDER BY id DESC");
+    notes = result.rows;
+
+    res.render("index", { notes: notes });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.get("/new", (req, res) => {
   res.render("new");
 });
 
-app.post("/new", (req, res) => {
+app.post("/new", async (req, res) => {
   const { title, content } = req.body;
-  const _id = notes.length + 1;
-  notes.push({ _id, title, content });
-  res.redirect("/");
-});
-
-app.get("/notes/:_id", (req, res) => {
-  const _id = req.params._id;
-  const note = notes.find((note) => note._id === parseInt(_id));
-  if (!note) {
-    res.status(404).send("Note not found");
-    return;
+  try {
+    await db.query("INSERT INTO notes (title, content) VALUES ($1, $2)", [
+      title,
+      content,
+    ]);
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
   }
-  res.render("show", { note: note });
 });
 
-app.get("/edit/:_id", (req, res) => {
-  const _id = parseInt(req.params._id);
-  const note = notes.find((note) => note._id === _id);
-  if (!note) {
-    res.status(404).send("Note not found");
-    return;
+app.get("/notes/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  try {
+    const note = await db.query("SELECT * FROM notes WHERE id = $1", [id]);
+    res.render("show", { note: note.rows[0] });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).send("Internal Server Error");
   }
-  res.render("edit", { note: note });
 });
 
-app.post("/edit/:_id", (req, res) => {
-  const _id = parseInt(req.params._id);
+app.get("/edit/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const note = await db.query("SELECT * FROM notes WHERE id = $1", [id]);
+    res.render("edit", { note: note.rows[0] });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/edit/:id", async (req, res) => {
+  const id = req.params.id;
   const { title, content } = req.body;
-  const noteIndex = notes.findIndex((note) => note._id === _id);
-  if (noteIndex === -1) {
-    res.status(404).send("Note not found");
-    return;
+  try {
+    await db.query(
+      "UPDATE notes SET title = $1, content = $2 WHERE id = $3 ;",
+      [title, content, id]
+    );
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
   }
-  notes[noteIndex].title = title;
-  notes[noteIndex].content = content;
-  res.redirect("/");
 });
 
-app.post("/delete/:_id", (req, res) => {
-  const id = req.params._id.toString();
-  const noteIndex = notes.findIndex((note) => note._id === parseInt(id));
-  if (noteIndex === -1) {
-    return res.status(404).send("Note not found");
+app.post("/delete/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await db.query("DELETE FROM notes WHERE id = $ ;", [id]);
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
   }
-  notes.splice(noteIndex, 1);
-  res.redirect("/");
 });
 
 app.listen(port, () => {
